@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext'; // Importando o AuthProvider
+import Login from './pages/client/Login';
+import Register from './pages/client/Register';
+import Dashboard from './pages/client/Dashboard';
+import Transfer from './pages/client/Transfer';
+import Statement from './pages/client/Statement';
+import Profile from './pages/client/Profile';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminOperations from './pages/admin/AdminOperations';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminManageClients from './pages/admin/AdminManageClients';
+import ClientLayout from './pages/client/ClientLayout';
+import Loans from './pages/client/Loans';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Página de Login */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Rotas do Cliente que requerem autenticação */}
+          <Route element={<ClientLayout />}>
+            <Route path="/loans" element={<Loans />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/transfer" element={<Transfer />} />
+            <Route path="/statement" element={<Statement />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+
+          {/* Rotas Administrativas */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/operations" element={<AdminOperations />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/manage-clients" element={<AdminManageClients />} />
+
+          {/* Redireciona qualquer rota desconhecida para /login */}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
-}
+};
 
 export default App;

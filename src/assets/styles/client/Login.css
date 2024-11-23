@@ -1,0 +1,69 @@
+/* src/assets/styles/Login.css */
+
+.login-container {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    /* Limita a largura do formulário */
+    margin: auto;
+    /* Centraliza o formulário na página */
+}
+
+.login-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    /* Centraliza o título */
+}
+
+.login-container .p-inputtext,
+.login-container .p-password {
+    width: 100%;
+    /* Faz os inputs ocuparem toda a largura */
+    margin-bottom: 15px;
+    /* Espaçamento entre os elementos */
+}
+
+.login-container .error-message {
+    color: red;
+    /* Cor da mensagem de erro */
+    margin-bottom: 15px;
+    /* Espaçamento entre a mensagem de erro e os botões */
+    text-align: center;
+    /* Centraliza a mensagem de erro */
+}
+
+.login-container .button-group {
+    display: flex;
+    /* Usa flexbox para os botões */
+    justify-content: space-between;
+    /* Espaçamento entre os botões */
+}
+
+.login-container .p-button {
+    flex: 1;
+    /* Faz os botões ocuparem a mesma largura */
+    margin-right: 10px;
+    /* Espaçamento à direita do botão "Entrar" */
+}
+
+.login-container .p-button-secondary {
+    background-color: #6c757d;
+    /* Cor do botão secundário */
+    border: none;
+    /* Remove borda */
+}
+
+.login-container .p-button-secondary:hover {
+    background-color: #5a6268;
+    /* Cor ao passar o mouse */
+}
+
+/* Remove a margem do último botão */
+.login-container .p-button:last-child {
+    margin-right: 0;
+}

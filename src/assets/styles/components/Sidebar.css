@@ -1,0 +1,38 @@
+/* src/styles.css */
+.client-layout {
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    height: 100vh;
+    padding: 20px;
+    color: white;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    text-align: center; /* Centraliza os itens da lista */
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar button {
+    width: 100%; /* Garante que o botão ocupe toda a largura */
+    text-align: center; /* Centraliza o texto dentro do botão */
+}
+
+.sidebar h2 {
+    color: white;
+    text-align: center;
+    font-size: 40px;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+}
