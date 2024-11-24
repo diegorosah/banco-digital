@@ -15,6 +15,8 @@ import ClientLayout from './pages/client/ClientLayout';
 import Loans from './pages/client/Loans';
 import OfferDetails from './pages/client/OfferDetails'; // Novo componente de detalhes da oferta
 import UserProfile from './pages/client/UserProfile';
+import PreFormalization from './pages/client/PreFormalization';
+import Formalization from './pages/client/Formalization';
 
 const App = () => {
   return (
@@ -34,6 +36,8 @@ const App = () => {
             <Route path="/statement" element={<Statement />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/edit" element={<UserProfile />} />
+            <Route path="/preformalization" element={<PreFormalization />} />
+            <Route path="/formalization" element={<Formalization />} />
           </Route>
 
           {/* Rotas Administrativas */}

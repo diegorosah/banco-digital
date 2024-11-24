@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
@@ -9,11 +9,12 @@ import axios from 'axios';
 import '../../assets/styles/client/UserProfile.css';
 
 const UserProfile = () => {
+    const location = useLocation();
+    const [editableOffer] = useState(location.state?.offer || {});
     const [cepError, setCepError] = useState('');
     const { user } = useAuth();
-    const location = useLocation();
     const navigate = useNavigate();
-    const [userData, setUserData] = useState(location.state?.user || {
+    const [userData, setUserData] = useState({
         name: '',
         email: '',
         phone: '',
@@ -45,6 +46,45 @@ const UserProfile = () => {
         { label: 'Advogado', value: 'lawyer' },
     ];
 
+    // Carrega os dados no estado inicial, caso existam
+    useEffect(() => {
+        const loadUserData = async () => {
+            if (location.state?.user) {
+                const loadedData = { ...location.state.user };
+                // Convertendo birthDate para um objeto Date, se necessário
+                if (loadedData.birthDate && typeof loadedData.birthDate === 'string') {
+                    loadedData.birthDate = new Date(loadedData.birthDate);
+                }
+                setUserData(loadedData);
+            } else if (user?.id) {
+                try {
+                    setLoading(true);
+                    const response = await axios.get(`http://localhost:5000/api/user-profile/${user.id}`, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+                        },
+                    });
+
+                    if (response.data) {
+                        const fetchedData = response.data;
+                        // Convertendo birthDate para um objeto Date, se necessário
+                        if (fetchedData.birthDate && typeof fetchedData.birthDate === 'string') {
+                            fetchedData.birthDate = new Date(fetchedData.birthDate);
+                        }
+                        setUserData(fetchedData);
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar dados do usuário:', error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadUserData();
+    }, [location.state?.user, user?.id]);
+
+
     const fetchAddressByCEP = async (cep) => {
         try {
             const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
@@ -61,7 +101,7 @@ const UserProfile = () => {
         } catch (error) {
             console.error('Erro ao buscar CEP:', error);
         }
-        return null; // Retorna `null` se o CEP for inválido ou houver erro
+        return null;
     };
 
     const handleCepChange = async (e) => {
@@ -70,7 +110,7 @@ const UserProfile = () => {
             ...prev,
             address: { ...prev.address, cep },
         }));
-        setCepError(''); // Limpar mensagem de erro ao alterar o valor
+        setCepError('');
 
         if (cep.length === 8) {
             setLoading(true);
@@ -87,7 +127,6 @@ const UserProfile = () => {
             }
         }
     };
-
 
     const handleInputChange = (field, value) => {
         setUserData((prev) => ({ ...prev, [field]: value }));
@@ -106,31 +145,35 @@ const UserProfile = () => {
                 console.error("User ID não encontrado.");
                 return;
             }
-            
-            // Incluindo o user.id no userData antes de enviar
+
             const updatedUserData = {
                 ...userData,
-                userId: user.id // Adiciona o user.id no objeto
+                userId: user.id,
             };
-    
+
             setLoading(true);
-    
+
             const apiUrl = 'http://localhost:5000/api/user-profile';
             const method = userData.id ? 'put' : 'post';
             const headers = {
-                Authorization: `Bearer ${localStorage.getItem('token') || ''}`, // Inclua o token de autenticação
+                Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
             };
-    
+
             const response = await axios({
                 method,
                 url: userData.id ? `${apiUrl}/${userData.id}` : apiUrl,
-                data: updatedUserData, // Usa o updatedUserData que contém o userId
+                data: updatedUserData,
                 headers,
             });
-    
+
             if (response.status === 200 || response.status === 201) {
                 console.log('Dados salvos com sucesso:', response.data);
-                navigate(-1); // Redireciona após salvar
+                navigate('/preformalization', {
+                    state: {
+                      offer: editableOffer,
+                      userId: user.id, 
+                    },
+                  });
             } else {
                 console.error('Erro ao salvar os dados:', response.data);
             }
@@ -138,9 +181,10 @@ const UserProfile = () => {
             console.error('Erro ao salvar dados do usuário:', error);
             alert('Ocorreu um erro ao salvar os dados. Tente novamente.');
         } finally {
-            setLoading(false); // Oculta o spinner após a tentativa
+            setLoading(false);
         }
     };
+
 
     return (
         <div className="user-profile-page">
@@ -217,7 +261,7 @@ const UserProfile = () => {
                             value={userData.address.cep}
                             onChange={handleCepChange}
                             placeholder="Digite o CEP"
-                            className={cepError ? 'p-invalid' : ''} // Adiciona uma classe para estilo de erro
+                            className={cepError ? 'p-invalid' : ''}
                         />
                         {cepError && <small className="p-error">{cepError}</small>}
                     </div>
