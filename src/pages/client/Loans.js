@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import { InputNumber } from 'primereact/inputnumber';
+import { useNavigate } from 'react-router-dom'; // Import para redirecionamento
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import '../../assets/styles/client/Loans.css';
@@ -12,10 +12,9 @@ const Loans = () => {
     const [selectedOffer, setSelectedOffer] = useState(null);
     const [isInitialized, setIsInitialized] = useState(false);
     const isOffersSaved = useRef(false);
-    const [proposalSaved, setProposalSaved] = useState(null);
-    const [showOfferDetails, setShowOfferDetails] = useState(false); // Novo estado para exibir o container de componentes
-    const [editableOffer, setEditableOffer] = useState(null);
     const hasDeletedOffers = useRef(false);
+
+    const navigate = useNavigate(); // Hook para navegação
 
     const deleteExistingOffers = useCallback(async () => {
         if (!user || !user.id || hasDeletedOffers.current) return;
@@ -87,60 +86,10 @@ const Loans = () => {
 
     const handleNext = () => {
         if (selectedOffer) {
-            saveProposal(selectedOffer, user);
-            setEditableOffer(selectedOffer);
-            setShowOfferDetails(true); // Exibe o container de componentes ao invés do modal
+            navigate('/offer-details', { state: { offer: selectedOffer } }); // Redireciona para a nova página com os dados da oferta
         } else {
             console.log('Nenhuma oferta selecionada!');
         }
-    };
-
-    const saveProposal = async (offer, user) => {
-        try {
-            if (!offer._id) {
-                throw new Error('ID da oferta está faltando');
-            }
-            const payload = { offerId: offer._id, userId: user.id };
-            console.log('Dados enviados para a proposta:', payload);
-            const response = await axios.post('http://localhost:5000/api/proposals', payload);
-            setProposalSaved(response.data);
-            console.log('Proposta salva com sucesso:', response.data);
-        } catch (error) {
-            console.error('Erro ao salvar proposta:', error.response ? error.response.data : error.message);
-        }
-    };
-
-    const handleExit = async () => {
-        if (proposalSaved) {
-            console.log('Tentando excluir proposta com ID:', proposalSaved._id);
-            try {
-                await axios.delete(`http://localhost:5000/api/proposals/${proposalSaved._id}`);
-                console.log('Proposta excluída com sucesso.');
-            } catch (error) {
-                console.error('Erro ao excluir proposta:', error);
-            }
-        }
-        setShowOfferDetails(false); // Fecha o container de componentes
-    };
-
-    const handleSaveChanges = async () => {
-        if (editableOffer) {
-            try {
-                const response = await axios.put(
-                    `http://localhost:5000/api/offers/${editableOffer._id}`,
-                    editableOffer
-                );
-                console.log('Alterações salvas na oferta:', response.data);
-                setOffers(prevOffers =>
-                    prevOffers.map(offer =>
-                        offer._id === editableOffer._id ? response.data : offer
-                    )
-                );
-            } catch (error) {
-                console.error('Erro ao salvar alterações na oferta:', error);
-            }
-        }
-        setShowOfferDetails(false); // Fecha o container de componentes
     };
 
     return (
@@ -165,46 +114,6 @@ const Loans = () => {
                 onClick={handleNext}
                 disabled={!selectedOffer}
             />
-
-            {/* Overlay */}
-            <div className={`overlay ${showOfferDetails ? 'show' : ''}`} onClick={handleExit}></div>
-
-            {/* Novo container de componentes */}
-            <div className={`offer-details-container ${showOfferDetails ? 'show' : ''}`}>
-                <h3>Detalhes da Oferta</h3>
-                <div className='dados-proposta'>
-                    <br></br>
-                    <label>Valor liberado:</label>
-                    <InputNumber
-                        className='input-dados-proposta'
-                        value={editableOffer?.valorLiberado}
-                        onValueChange={e => setEditableOffer({ ...editableOffer, valorLiberado: e.value })}
-                        placeholder="Valor Liberado"
-                    />
-                    <br></br>
-                    <label>Parcelas:</label>
-                    <InputNumber
-                        className='input-dados-proposta'
-                        value={editableOffer?.parcelas}
-                        onValueChange={e => setEditableOffer({ ...editableOffer, parcelas: e.value })}
-                        placeholder="Parcelas"
-                    />
-                    <br></br>
-                    <label>Valor Parcela:</label>
-                    <InputNumber
-                        className='input-dados-proposta'
-                        value={editableOffer?.valorParcela}
-                        onValueChange={e => setEditableOffer({ ...editableOffer, valorParcela: e.value })}
-                        placeholder="Valor da Parcela"
-                    />
-                </div>
-                <div className='buttons'>
-                    <Button label="Salvar Alterações" onClick={handleSaveChanges} />
-
-                    {/* Botão Sair */}
-                    <Button label="Sair" className="button-sair" onClick={handleExit} />
-                </div>
-            </div>
         </div>
     );
 };

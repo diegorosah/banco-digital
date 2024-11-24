@@ -13,6 +13,8 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminManageClients from './pages/admin/AdminManageClients';
 import ClientLayout from './pages/client/ClientLayout';
 import Loans from './pages/client/Loans';
+import OfferDetails from './pages/client/OfferDetails'; // Novo componente de detalhes da oferta
+import UserProfile from './pages/client/UserProfile';
 
 const App = () => {
   return (
@@ -26,10 +28,12 @@ const App = () => {
           {/* Rotas do Cliente que requerem autenticação */}
           <Route element={<ClientLayout />}>
             <Route path="/loans" element={<Loans />} />
+            <Route path="/offer-details" element={<OfferDetails />} /> {/* Nova Rota */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/transfer" element={<Transfer />} />
             <Route path="/statement" element={<Statement />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<UserProfile />} />
           </Route>
 
           {/* Rotas Administrativas */}

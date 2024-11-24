@@ -1,0 +1,43 @@
+.offer-details-page {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px; /* Limita a largura do formulário */
+    margin: auto; /* Centraliza o formulário na página */
+}
+
+.offer-details-page h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.dados-proposta label {
+    display: block; /* Força o label a ocupar uma linha */
+    margin-bottom: 5px;
+    color: #666;
+    font-weight: 500;
+}
+
+.dados-proposta .p-inputnumber {
+    width: 100%; /* Faz os inputs ocuparem toda a largura */
+    margin-bottom: 15px; /* Espaçamento entre os elementos */
+}
+
+.offer-details-page .p-button {
+    width: 100%; /* Botões ocupam toda a largura */
+    margin-top: 15px;
+}
+
+.offer-details-page .button-cancelar {
+    background-color: #f44336; /* Vermelho para o botão cancelar */
+    color: white;
+    border: none;
+}
+
+.offer-details-page .button-cancelar:hover {
+    background-color: #d32f2f; /* Cor mais escura no hover */
+}
