@@ -50,7 +50,7 @@ const Formalization = () => {
 
             const signatureData = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
             const response = await axios.post(
-                '/api/signatures',
+                'http://localhost:5000/api/signatures',
                 { proposalNumber, signatureData },
                 {
                     headers: {
@@ -59,7 +59,7 @@ const Formalization = () => {
                 }
             );
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 alert("Assinatura salva com sucesso!");
                 navigate('/confirmation');
             } else {
