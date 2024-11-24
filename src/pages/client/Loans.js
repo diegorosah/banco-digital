@@ -86,7 +86,7 @@ const Loans = () => {
 
     const handleNext = () => {
         if (selectedOffer) {
-            navigate('/offer-details', { state: { offer: selectedOffer } }); // Redireciona para a nova página com os dados da oferta
+            navigate('/offer-details', { state: { offer: selectedOffer } }); 
         } else {
             console.log('Nenhuma oferta selecionada!');
         }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import { Button } from 'primereact/button';
 import '../../assets/styles/client/PreFormalization.css';
@@ -7,7 +8,9 @@ import '../../assets/styles/client/PreFormalization.css';
 const PreFormalization = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [offer, setOffer] = useState(null);
+  const [offer, setOffer] = useState(location.state?.offer || {});
+  const { user } = useAuth();
+  const [proposal] = useState(location.state?.proposal || {});
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,19 +18,23 @@ const PreFormalization = () => {
     const validateData = async () => {
       try {
         // Valida se a oferta foi passada corretamente
-        const offerData = location.state?.offer;
+        const offerData = offer;
         if (!offerData) {
           console.error("Oferta inválida.");
-          navigate('/error'); // Redireciona em caso de oferta inválida
           return;
         }
         setOffer(offerData);
 
         // Valida e busca os dados do cliente
-        const userId = location.state?.userId;
+        const userId = user.id;
         if (!userId) {
           console.error("Cliente inválido.");
-          navigate('/error'); // Redireciona em caso de cliente inválido
+          return;
+        }
+
+        const proposalId = proposal._id;
+        if (!proposalId) {
+          console.error("Proposta invalida");
           return;
         }
 
@@ -52,7 +59,7 @@ const PreFormalization = () => {
     };
 
     validateData();
-  }, [location, navigate]);
+  }, [location, navigate, offer, proposal, user.id]);
 
   if (loading) {
     return <div className="loading">Carregando...</div>;
@@ -72,10 +79,7 @@ const PreFormalization = () => {
     );
 
     if (userConfirmed) {
-      console.log("Navigating with offerId:", offer.id);
-      navigate('/formalization', { state: { offerId: offer.id } });
-
-
+      navigate('/formalization', { state: { proposal: proposal} });
     } else {
       console.log('Formalização cancelada pelo usuário.');
     }
@@ -95,9 +99,9 @@ const PreFormalization = () => {
       <div className="dados-oferta-container">
         <fieldset>
           <legend className="legend">Dados da Oferta</legend>
-          <p><strong>Valor Liberado:</strong> R$ {offer.valorLiberado.toLocaleString('pt-BR')}</p>
-          <p><strong>Parcelas:</strong> {offer.parcelas}</p>
-          <p><strong>Valor da Parcela:</strong> R$ {offer.valorParcela.toLocaleString('pt-BR')}</p>
+          <p><strong>Valor Liberado:</strong> R$ {offer?.valorLiberado?.toLocaleString('pt-BR') || 'N/A'}</p>
+          <p><strong>Parcelas:</strong> {offer?.parcelas || 'N/A'}</p>
+          <p><strong>Valor da Parcela:</strong> R$ {offer?.valorParcela?.toLocaleString('pt-BR') || 'N/A'}</p>
         </fieldset>
       </div>
 
@@ -105,9 +109,9 @@ const PreFormalization = () => {
       <div className="dados-cliente-container">
         <fieldset>
           <legend className="legend">Dados do Cliente</legend>
-          <p><strong>Nome:</strong> {client.name}</p>
-          <p><strong>Email:</strong> {client.email}</p>
-          <p><strong>CPF:</strong> {client.cpfCnpj}</p>
+          <p><strong>Nome:</strong> {client?.name || 'N/A'}</p>
+          <p><strong>Email:</strong> {client?.email || 'N/A'}</p>
+          <p><strong>CPF:</strong> {client?.cpfCnpj || 'N/A'}</p>
         </fieldset>
       </div>
 

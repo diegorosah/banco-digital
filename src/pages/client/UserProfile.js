@@ -11,6 +11,7 @@ import '../../assets/styles/client/UserProfile.css';
 const UserProfile = () => {
     const location = useLocation();
     const [editableOffer] = useState(location.state?.offer || {});
+    const [proposal] = useState(location.state?.proposal || {});
     const [cepError, setCepError] = useState('');
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -170,10 +171,10 @@ const UserProfile = () => {
                 console.log('Dados salvos com sucesso:', response.data);
                 navigate('/preformalization', {
                     state: {
-                      offer: editableOffer,
-                      userId: user.id, 
+                        proposal: proposal,
+                        offer: editableOffer,
                     },
-                  });
+                });
             } else {
                 console.error('Erro ao salvar os dados:', response.data);
             }

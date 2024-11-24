@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -8,19 +8,14 @@ const Formalization = () => {
     const sigCanvas = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
+    const [proposal] = useState(location.state?.proposal || {});
     const [isSaving, setIsSaving] = useState(false);
 
-    // Extraindo a oferta do estado e pegando o número da proposta
-    const offer = location.state?.offer;
-    const proposalNumber = location.state?.offerId || '';
-    console.log("Proposta ID:", proposalNumber);
+    // Certifique-se de acessar a propriedade correta de proposal
+    const proposalNumber = proposal?._id || null; // Supondo que proposal tenha uma propriedade 'number'
+    
 
-
-    console.log('Proposta ID:', proposalNumber);
-
-    // Verificar se o número da proposta é válido ao montar o componente
     useEffect(() => {
-
         if (!proposalNumber) {
             console.error("Número da proposta não encontrado.");
             alert("Número da proposta inválido. Você será redirecionado.");
@@ -28,12 +23,13 @@ const Formalization = () => {
         }
     }, [proposalNumber, navigate]);
 
-    const onScroll = () => { /* lógica aqui */ };
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    return () => {
-        window.removeEventListener('scroll', onScroll);
-    };
+    useEffect(() => {
+        const onScroll = () =>
+            window.addEventListener('scroll', onScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+        };
+    }, []);
 
     const clearSignature = () => {
         if (sigCanvas.current) {
@@ -77,14 +73,12 @@ const Formalization = () => {
         }
     };
 
-
     return (
         <div className="formalization-container">
             <h3>Formalização</h3>
             <p>Por favor, desenhe sua assinatura para formalizar a proposta.</p>
-            <p><strong>Número da Proposta:</strong> {proposalNumber}</p>
+            <p><strong>Número da Proposta:</strong> {proposalNumber || 'N/A'}</p> {/* Exibe 'N/A' caso proposalNumber seja undefined */}
 
-            {/* Canvas de assinatura */}
             <div className="signature-canvas">
                 <SignatureCanvas
                     ref={sigCanvas}
@@ -97,7 +91,6 @@ const Formalization = () => {
                 />
             </div>
 
-            {/* Botões de Ação */}
             <div className="formalization-actions">
                 <button className="btn-clear" onClick={clearSignature}>
                     Limpar
@@ -105,7 +98,6 @@ const Formalization = () => {
                 <button className="btn-save" onClick={saveSignature} disabled={isSaving}>
                     {isSaving ? 'Salvando...' : 'Salvar Assinatura'}
                 </button>
-
             </div>
         </div>
     );
