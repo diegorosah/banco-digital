@@ -10,16 +10,15 @@ const Formalization = () => {
     const navigate = useNavigate();
     const [proposal] = useState(location.state?.proposal || {});
     const [isSaving, setIsSaving] = useState(false);
+    const [showModal, setShowModal] = useState(false); // Estado para controlar o modal
 
-    // Certifique-se de acessar a propriedade correta de proposal
-    const proposalNumber = proposal?._id || null; // Supondo que proposal tenha uma propriedade 'number'
-    
+    const proposalNumber = proposal?._id || null;
 
     useEffect(() => {
         if (!proposalNumber) {
             console.error("Número da proposta não encontrado.");
             alert("Número da proposta inválido. Você será redirecionado.");
-            navigate('/error'); // Redireciona para uma página de erro ou página inicial
+            navigate('/error');
         }
     }, [proposalNumber, navigate]);
 
@@ -33,7 +32,7 @@ const Formalization = () => {
 
     const clearSignature = () => {
         if (sigCanvas.current) {
-            sigCanvas.current.clear(); // Limpa o canvas
+            sigCanvas.current.clear();
         }
     };
 
@@ -60,8 +59,7 @@ const Formalization = () => {
             );
 
             if (response.status === 201) {
-                alert("Assinatura salva com sucesso!");
-                navigate('/confirmation');
+                setShowModal(true); // Exibe o modal ao salvar com sucesso
             } else {
                 alert("Erro ao salvar a assinatura. Tente novamente.");
             }
@@ -73,11 +71,16 @@ const Formalization = () => {
         }
     };
 
+    const handleModalClose = () => {
+        setShowModal(false); // Fecha o modal
+        navigate('/dashboard'); // Redireciona para o Dashboard
+    };
+
     return (
         <div className="formalization-container">
             <h3>Formalização</h3>
             <p>Por favor, desenhe sua assinatura para formalizar a proposta.</p>
-            <p><strong>Número da Proposta:</strong> {proposalNumber || 'N/A'}</p> {/* Exibe 'N/A' caso proposalNumber seja undefined */}
+            <p><strong>Número da Proposta:</strong> {proposalNumber || 'N/A'}</p>
 
             <div className="signature-canvas">
                 <SignatureCanvas
@@ -99,6 +102,18 @@ const Formalization = () => {
                     {isSaving ? 'Salvando...' : 'Salvar Assinatura'}
                 </button>
             </div>
+
+            {/* Modal */}
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Empréstimo contratado com sucesso!</h2>
+                        <button onClick={handleModalClose} className="btn-ok">
+                            Ok
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

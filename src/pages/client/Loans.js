@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
 import { useNavigate } from 'react-router-dom'; // Import para redirecionamento
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +13,7 @@ const Loans = () => {
     const [offers, setOffers] = useState([]);
     const [selectedOffer, setSelectedOffer] = useState(null);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [proposals, setProposals] = useState([]);
     const isOffersSaved = useRef(false);
     const hasDeletedOffers = useRef(false);
 
@@ -40,6 +43,30 @@ const Loans = () => {
         setOffers(newOffers);
         setSelectedOffer(newOffers[0]);
     };
+
+    useEffect(() => {
+        const fetchProposals = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/proposals/' + user.id, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar propostas');
+                }
+
+                const data = await response.json();
+                setProposals(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchProposals();
+    }, []);
 
     const saveOffers = useCallback(async () => {
         if (!user || !user.id || isOffersSaved.current) return;
@@ -86,7 +113,7 @@ const Loans = () => {
 
     const handleNext = () => {
         if (selectedOffer) {
-            navigate('/offer-details', { state: { offer: selectedOffer } }); 
+            navigate('/offer-details', { state: { offer: selectedOffer } });
         } else {
             console.log('Nenhuma oferta selecionada!');
         }
@@ -114,6 +141,15 @@ const Loans = () => {
                 onClick={handleNext}
                 disabled={!selectedOffer}
             />
+            <div className="proposals">
+                <h2>Minhas Propostas:</h2>
+                <DataTable value={proposals} paginator rows={10}>
+                    <Column field="_id" header="Numero da Proposta" />
+                    <Column field="status" header="Status" />
+                    <Column field="date" header="Data" body={rowData => new Date(rowData.date).toLocaleDateString()} />
+                </DataTable>
+            </div>
+
         </div>
     );
 };
