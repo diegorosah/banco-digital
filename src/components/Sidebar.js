@@ -29,11 +29,6 @@ const Sidebar = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link to="/loans">
-                        <Button label="Empréstimos" className="sidebar-button" />
-                    </Link>
-                </li>
-                <li>
                     <Link to="/investments">
                         <Button label="Investimentos" className="sidebar-button" />
                     </Link>
